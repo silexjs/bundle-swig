@@ -1,0 +1,11 @@
+{
+	"services": {
+		"silex.swig.templating": {
+			"class": "Silex.SilexSwigBundle.Services.Templating",
+			"arguments": [
+				{ "type": "service", "id": "kernel" }
+			],
+			"priority": 5
+		}
+	}
+}
