@@ -18,7 +18,7 @@ var Templating = function(kernel) {
 					} else {
 						var bundle = { dir: self.kernel.rootDir+'/app' };
 					}
-					var file = bundle.dir+'/Ressources/views/'+(toArray[1]===''?'':toArray[1]+'/')+'/'+toArray[2];
+					var file = bundle.dir+'/Resources/views/'+(toArray[1]===''?'':toArray[1]+'/')+toArray[2];
 					if(fs.existsSync(file) === false) {
 						throw new Error('SILEX.SWIG: The view "'+toArray.join(':')+'"  does not exist. ('+file+')');
 					}
