@@ -20,7 +20,7 @@ var Templating = function(kernel) {
 					}
 					var file = bundle.dir+'/Resources/views/'+(toView[2]===''?'':toView[2]+'/')+toView[3];
 					if(fs.existsSync(file) === false) {
-						throw new Error('SILEX.SWIG: The view "'+toView.join(':')+'"  does not exist. ('+file+')');
+						throw new Error('SILEX.SWIG: The view "'+to+'" does not exist. ('+file+')');
 					}
 					to = file;
 				}
