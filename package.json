@@ -1,6 +1,6 @@
 {
 	"name": "silex-bundle-swig",
-	"version": "0.0.5",
+	"version": "0.0.7",
 	"description": "[SILEX][BUNDLE] Adds a template engine (swig)",
 	"author": "Valentin Allaire <valentin@sitexw.fr>",
 	"license": "MIT",

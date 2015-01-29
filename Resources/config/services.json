@@ -1,9 +1,10 @@
 {
 	"services": {
 		"silex.swig.templating": {
-			"class": "Silex.SilexSwigBundle.Services.Templating",
+			"class": "Silex.SilexSwigBundle.Templating.Templating",
 			"arguments": [
-				{ "type": "service", "id": "kernel" }
+				{ "type": "service", "id": "kernel" },
+				{ "type": "service", "id": "kernel.config" }
 			],
 			"priority": 5
 		}

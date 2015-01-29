@@ -1,10 +1,22 @@
 var pa = require('path');
 var fs = require('fs');
 
-var Templating = function(kernel) {
+var Templating = function(kernel, config) {
 	var self = this;
 	this.kernel = kernel;
+	this.config = config;
 	this.swig = require('swig');
+	var cache = this.config.get('framework.templating.cache');
+	if((cache === 'true' || cache === true)
+	|| (cache !== 'true' && cache !== true && this.kernel.debug === true)) {
+		this.swig.setDefaults({ cache: {
+			get: function(key) { return self.kernel.cache.get('SilexSwigBundle.templating.'+key); },
+			set: function(key, value) { return self.kernel.cache.set('SilexSwigBundle.templating.'+key, value); },
+		} });
+	} else {
+		this.swig.setDefaults({ cache: false });
+	}
+	
 	this.swig.setDefaults({
 		loader: {
 			resolve: function(to, from) {
@@ -41,7 +53,9 @@ var Templating = function(kernel) {
 	});
 };
 Templating.prototype = {
+	name: 'swig',
 	kernel: null,
+	config: null,
 	swig: null,
 	
 	renderView: function(view, parameters) {
@@ -58,6 +72,9 @@ Templating.prototype = {
 	
 	setFilter: function(filterName, callback) {
 		return this.swig.setFilter(filterName, callback);
+	},
+	setTag: function(name, parse, compile, ends, blockLevel) {
+		return this.swig.setTag(name, parse, compile, ends, blockLevel);
 	},
 };
 
