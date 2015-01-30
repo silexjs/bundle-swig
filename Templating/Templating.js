@@ -28,7 +28,7 @@ var Templating = function(kernel, config) {
 							throw new Error('SILEX.SWIG: The bundle "'+toView[1]+'" of the view requested does not exist. ('+to+')');
 						}
 					} else {
-						var bundle = { dir: self.kernel.rootDir+'/app' };
+						var bundle = { dir: self.kernel.dir.app };
 					}
 					var file = bundle.dir+'/Resources/views/'+(toView[2]===''?'':toView[2]+'/')+toView[3];
 					if(fs.existsSync(file) === false) {
