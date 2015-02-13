@@ -1,7 +1,7 @@
 {
 	"services": {
 		"silex.swig.templating": {
-			"class": "Silex.SilexSwigBundle.Templating.Templating",
+			"class": "Silex.SwigBundle.Templating.Templating",
 			"arguments": [
 				{ "type": "service", "id": "kernel" },
 				{ "type": "service", "id": "kernel.config" }

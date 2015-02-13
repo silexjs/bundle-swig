@@ -1,5 +1,6 @@
 var pa = require('path');
 var fs = require('fs');
+var mime = require('mime-types');
 
 var Templating = function(kernel, config) {
 	var self = this;
@@ -62,11 +63,25 @@ Templating.prototype = {
 		var parameters = parameters || {};
 		return this.swig.renderFile(view, parameters);
 	},
-	renderViewResponse: function(view, parameters, request, response) {
+	sendView: function(view, parameters, request, response) {
 		if(response.getHeader('content-type') === undefined) {
-			response.setHeader('content-type', 'text/html');
+			var contentType = mime.contentType(view.replace(/\.twig$/i, ''));
+			if(contentType === false) {
+				contentType = 'text/plain';
+			}
+			response.setHeader('content-type', contentType);
 		}
 		response.content += this.renderView(view, parameters);
+		response.hasResponse = true;
+	},
+	sendHtml: function(html, parameters, request, response) {
+		response.setHeader('content-type', 'text/html');
+		response.content += this.swig.render(html, { locals: parameters });
+		response.hasResponse = true;
+	},
+	sendJson: function(json, beautify, request, response) {
+		response.setHeader('content-type', 'application/json');
+		response.content += JSON.stringify(json, null, (beautify===false?null:(beautify===true?'\t':beautify)));
 		response.hasResponse = true;
 	},
 	

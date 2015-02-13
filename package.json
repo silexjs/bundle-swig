@@ -1,6 +1,6 @@
 {
 	"name": "silex-bundle-swig",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "[SILEX][BUNDLE] Adds a template engine (swig)",
 	"author": "Valentin Allaire <valentin@sitexw.fr>",
 	"license": "MIT",
@@ -12,7 +12,8 @@
 		"bundle"
 	],
 	"dependencies": {
-		"swig": "1.x"
+		"swig": "1.x",
+		"mime-types": "2.x"
 	},
 	"devDependencies": {},
 	"repository": {
@@ -25,7 +26,7 @@
 	"homepage": "https://github.com/silexjs/bundle-swig",
 	"autoload": {
 		"psr-4": {
-			"Silex\\SilexSwigBundle": "./"
+			"Silex\\SwigBundle": "./"
 		}
 	}
 }
