@@ -3,16 +3,13 @@ var fs = require('fs');
 var mime = require('mime-types');
 
 var Templating = function(kernel, config) {
-	var self = this;
-	this.kernel = kernel;
-	this.config = config;
 	this.swig = require('swig');
-	var cache = this.config.get('framework.templating.cache');
-	if((cache === 'true' || cache === true)
-	|| (cache !== 'true' && cache !== true && this.kernel.debug === true)) {
+	var cache = config.get('framework.templating.cache');
+	if(cache !== undefined) { cache = Boolean(cache); }
+	if(cache === true || (cache === undefined && kernel.debug === false)) {
 		this.swig.setDefaults({ cache: {
-			get: function(key) { return self.kernel.cache.get('SilexSwigBundle.templating.'+key); },
-			set: function(key, value) { return self.kernel.cache.set('SilexSwigBundle.templating.'+key, value); },
+			get: function(key) { return kernel.cache.get('SilexSwigBundle.templating.'+key); },
+			set: function(key, value) { return kernel.cache.set('SilexSwigBundle.templating.'+key, value); },
 		} });
 	} else {
 		this.swig.setDefaults({ cache: false });
@@ -24,12 +21,12 @@ var Templating = function(kernel, config) {
 				var toView = to.match(/^(.*)\:(.*)\:(.+)$/i);
 				if(toView !== null) {
 					if(toView[1] !== '') {
-						var bundle = self.kernel.getBundle(toView[1]);
+						var bundle = kernel.getBundle(toView[1]);
 						if(bundle === null) {
 							throw new Error('SILEX.SWIG: The bundle "'+toView[1]+'" of the view requested does not exist. ('+to+')');
 						}
 					} else {
-						var bundle = { dir: self.kernel.dir.app };
+						var bundle = { dir: kernel.dir.app };
 					}
 					var file = bundle.dir+'/Resources/views/'+(toView[2]===''?'':toView[2]+'/')+toView[3];
 					if(fs.existsSync(file) === false) {
@@ -55,15 +52,19 @@ var Templating = function(kernel, config) {
 };
 Templating.prototype = {
 	name: 'swig',
-	kernel: null,
-	config: null,
 	swig: null,
 	
 	renderView: function(view, parameters) {
 		var parameters = parameters || {};
 		return this.swig.renderFile(view, parameters);
 	},
-	sendView: function(view, parameters, request, response) {
+	_send: function(content, contentType, status, request, response) {
+		response.setContentType(contentType);
+		response.content += content;
+		response.statusCode = status || 200;
+		response.hasResponse = true;
+	},
+	sendView: function(view, parameters, status, request, response) {
 		if(response.getHeader('content-type') === undefined) {
 			var contentType = mime.contentType(view.replace(/\.twig$/i, ''));
 			if(contentType === false) {
@@ -71,18 +72,16 @@ Templating.prototype = {
 			}
 			response.setHeader('content-type', contentType);
 		}
-		response.content += this.renderView(view, parameters);
-		response.hasResponse = true;
+		this._send(this.renderView(view, parameters), contentType, status, request, response);
 	},
-	sendHtml: function(html, parameters, request, response) {
-		response.setHeader('content-type', 'text/html');
-		response.content += this.swig.render(html, { locals: parameters });
-		response.hasResponse = true;
+	sendText: function(text, status, request, response) {
+		this._send(text, 'text/plain', status, request, response);
 	},
-	sendJson: function(json, beautify, request, response) {
-		response.setHeader('content-type', 'application/json');
-		response.content += JSON.stringify(json, null, (beautify===false?null:(beautify===true?'\t':beautify)));
-		response.hasResponse = true;
+	sendHtml: function(html, parameters, status, request, response) {
+		this._send(this.swig.render(html, { locals: parameters || {} }), 'text/html', status, request, response);
+	},
+	sendJson: function(json, beautify, status, request, response) {
+		this._send(JSON.stringify(json, null, (beautify===false?null:(beautify===true?'\t':beautify))), 'application/json', status, request, response);
 	},
 	
 	setFilter: function(filterName, callback) {
