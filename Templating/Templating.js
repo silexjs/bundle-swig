@@ -65,12 +65,12 @@ Templating.prototype = {
 		response.hasResponse = true;
 	},
 	sendView: function(view, parameters, status, request, response) {
+		var contentType = 'text/plain';
 		if(response.getHeader('content-type') === undefined) {
-			var contentType = mime.contentType(view.replace(/\.twig$/i, ''));
+			contentType = mime.contentType(view.replace(/\.twig$/i, ''));
 			if(contentType === false) {
 				contentType = 'text/plain';
 			}
-			response.setHeader('content-type', contentType);
 		}
 		this._send(this.renderView(view, parameters), contentType, status, request, response);
 	},
